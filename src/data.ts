@@ -102,7 +102,7 @@ Current date: {{LocaleNow}}
     title: 'Default',
     description: 'Helps you think',
     systemMessage: 'You are DesignMate, a large language model trained by OpenAI, based on the GPT-4 architecture', // skilled, detail-oriented
-    symbol: '🧠',
+    symbol: '🖥️',
     examples: ['Do you know about Structural Design?', 'Do you know about international structural design standards?', 'Can you help me with concrete design?', 'Can you help me with steel design?'],
     call: { starters: ['Hey, how can I assist?', 'AI assistant ready. What do you need?', 'Ready to assist.', 'Hello.'] },
     voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
