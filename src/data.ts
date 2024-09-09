@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export type SystemPurposeId = 'DesignMate' | 'Custom' | 'WorkbookCreator' | 'Modeller' | 'Generic' | 'YouTubeTranscriber';
+export type SystemPurposeId = 'DesignMate' | 'WorkbookCreator' | 'CSModeller' | 'DesignPad' | 'Generic' | 'Custom' | 'YouTubeTranscriber';
 
 export const defaultSystemPurposeId: SystemPurposeId = 'DesignMate';
 
@@ -64,13 +64,13 @@ Current date: {{LocaleNow}}
     symbol: '🏢',
     imageUri: '/images/personas/designmate_192.png',
     examples: ['Generate the nodes and beam elements for a portal frame with span=10m, bay spacing=5m, number of bays=5, apex height=5.5m, eaves height = 4.5m', 'Adjust the current model portal frame span to 12.5m'],
-    call: { starters: ['DesignMate is ready! Tell me how you would like for me to adjust your GenFEA model'] },
+    call: { starters: ['Do you know about the GenFEA Input Workbook format?'] },
     voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
     // highlighted: true,
   },
 
 
-  Modeller: {
+  CSModeller: {
     title: 'C# Code Modeller',
     description: 'Helps you with GenFEA scripting using C# programming language',
     // systemMessageNotes: 'Knowledge cutoff is set to "Current" instead of "{{Cutoff}}" to lower push backs',
@@ -95,7 +95,69 @@ Current date: {{LocaleNow}}
     symbol: '🏢',
     imageUri: '/images/personas/designmate_192.png',
     examples: ['Generate the nodes and beam elements for a portal frame with span=10m, bay spacing=5m, number of bays=5, apex height=5.5m, eaves height = 4.5m', 'Adjust the current model portal frame span to 12.5m'],
-    call: { starters: ['DesignMate is ready! Tell me how you would like for me to adjust your GenFEA model'] },
+    call: { starters: ['Do you know about GenFEA C# scripting syntax?'] },
+    voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
+    // highlighted: true,
+  },
+
+
+  DesignPad: {
+    title: 'DesignPad Scripter',
+    description: 'Helps you with GenFEA DesignPad scripting',
+    // systemMessageNotes: 'Knowledge cutoff is set to "Current" instead of "{{Cutoff}}" to lower push backs',
+    systemMessage: `You are an assistant who helps create DesignPad scripts to produce math and report outputs for GenFEA. Here is an example script for reference:
+example start:
+'<h1>Steel Beam Verification</h1>
+'<b>Design Code:</b> Eurocode 3 (EN 1993-1-1) for structural steel design, applicable in Singapore.<br>
+'<b>Section Type:</b> Hot-rolled (200 UC 46.2)<br>
+'<b>Seismic Considerations:</b> Not typically critical for Singapore, but check for lateral stability.<br>
+
+'<h3>Design Input:</h3>
+
+'Effective Length Factor
+'K = 1.0
+
+'Bending Capacity Verification
+'I_xx = 45579080mm^4
+'h = 200mm
+'W_pl_y = I_xx/(h/2)
+'M_Ed = 4283650Nm
+'f_y = 355N/mm^2
+'M_pl_Rd = f_y*W_pl_y
+'M_Ed ≤ M_pl_Rd
+
+'Shear Capacity Verification
+'A_v = 3886.12mm^2
+'V_Ed = 3136N
+'gamma_M0 = 1.0
+'V_pl_Rd = (f_y*A_v)/(sqrt(3)*gamma_M0)
+'V_Ed ≤ V_pl_Rd 
+
+'Deflection Compliance
+'d_max = 0.48mm
+'L = 3000mm
+'Allowable Deflection 
+'d_allowable = L/300 
+'d_max ≤ d_allowable
+
+'Lateral-Torsional Buckling Capacity
+'Assume critical moment M_cr higher than M_Ed for compact sections like UC. 
+'M_Ed ≤ M_cr
+
+'<h3>Additional Considerations:</h3>
+'<b>Reinforcement/Stiffening:</b> Not required for preliminary design; check detailed design if needed.<br> 
+'<b>Practical Sizes:</b> Use standard UC sections for ease of construction.<br>
+
+'<h2>Conclusion</h2>
+'The beam meets the structural and serviceability requirements per Eurocode 3 for the given loading and conditions.
+example end
+
+Note: always add "'" in front of text and html text as shown in the example. DesignPad is units aware. For variables, use valid values (integer or decimal only) when assigning - otherwise use text. Example: 'Bolt Size = M16 is text, whereas bolt_size = 16 is variable with valid assignment. DesignPad will perform calculations where math scripts are present, and assign the results to the variables preceeding it.
+`, // {{InputImage0}} {{ToolBrowser0}}
+    symbol: '💡',
+    imageUri: '/images/personas/designmate_192.png',
+    examples: ['Generate a DesignPad script to calculate the area of a cylinder', 'Generate a DesignPad script to calculate the bending moment of a simply supported beam'],
+    call: { starters: ['Do you know about DesignPad scripting syntax?'] },
     voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
     // highlighted: true,
   },
