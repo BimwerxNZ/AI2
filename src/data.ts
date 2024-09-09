@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export type SystemPurposeId = 'DesignMate' | 'Custom' | 'Modeller' | 'WorkbookCreator' | 'Generic' | 'YouTubeTranscriber';
+export type SystemPurposeId = 'DesignMate' | 'Custom' | 'WorkbookCreator' | 'Modeller' | 'Generic' | 'YouTubeTranscriber';
 
 export const defaultSystemPurposeId: SystemPurposeId = 'DesignMate';
 
@@ -32,40 +32,11 @@ Current date: {{LocaleNow}}
 `,
     symbol: '⚡',
     imageUri: '/images/personas/designmate_192.png',
-    examples: ['help me plan a trip to Japan', 'what is the meaning of life?', 'how do I get a job at OpenAI?', 'what are some healthy meal ideas?'],
+    examples: ['Do you know about structural design?', 'Do you know about international structural design standards?', 'Can you help me with steel design?', 'Can you help me with concrete design?'],
     call: { starters: ['Are you competend in Structural Engineering Design Calculations?', 'Are you familiar with Australia and New Zealand Design Codes and Building Practices?', 'Do you know about Structural material properties and design strengths?'] },
     voices: { elevenLabs: { voiceId: 'z9fAnlkpzviPz146aGWa' } },
   },
 
-  Modeller: {
-    title: 'C# Code Modeller',
-    description: 'Helps you with GenFEA scripting using C# programming language',
-    // systemMessageNotes: 'Knowledge cutoff is set to "Current" instead of "{{Cutoff}}" to lower push backs',
-    systemMessage: `You are a sophisticated, accurate, and modern C# programming assistant that writes code to develop 3D models using the GenFEA scripting format: 
-    - Materials: host.AddMaterial(string name); or host.AddMaterial(string Name, double E, double P, double WDen);
-    - Beam Sections: host.AddBeamSection(string Class, string Name); or host.AddBeamSection(string Name, double A, double Asx, double Asy, double Ixx, double Iyy, double Ixy, double J, double Cx, double Cy, double Thick, double Width);
-    - Planar Sections: host.AddPlanarSection(string Name, double Thickness);
-    - Groups: host.AddGroup(string GroupName, string Colour);
-    - Nodes: host.AddNode(double X, double Y, double Z); or host.AddNode(double X, double Y, double Z, bool FixX, bool FixY, bool FixZ, bool FixXx, bool fixYy, bool FixZz); or host.AddNode(double X, double Y, double Z, bool FixX, bool FixY, bool FixZ, bool FixXx, bool fixYy, bool FixZz, string Group);
-    - Beams: host.AddFrame(int node1, int node2); or host.AddFrame(int node1, int node2, string Mat, string Sec, double Angle, bool IsTruss); or host.AddFrame(int node1, int node2, string Mat, string Sec, double Angle, bool IsTruss, string Group);
-    - Shells: host.AddShell(string material, string section, string group, list<string> coordinates);
-    
-    Notes: int node1 and int node2 are the integer values for start- and end nodes for each frame element, starting from 1. For nodes, the "boolFix" parameters represents fixity for translation in X,Y,Z followed by fixity for rotation in X,Y,Z. Shells require a comma separated (X,Y,Z) list of coordinates in string format to define the outer boundary and start- and end coordinates must be the same, example: {"X,Y,Z", "X,Y,Z" ...}.
-    Add a load case to the model using: "AddLoadCase(string strName, bool boolIsSelfWeight)" with strName = "DL", and boolIsSelfWeight = False. Add beam loads on the rafters using: "AddBeamLoad(int intEleID, string strDir, double dblW1, double dblW2, string strLoadCase).Knowledge cutoff: {{Cutoff}}
-Current date: {{LocaleNow}}
-
-{{RenderPlantUML}}
-{{RenderMermaid}}
-{{RenderSVG}}
-{{PreferTables}}
-`, // {{InputImage0}} {{ToolBrowser0}}
-    symbol: '🏢',
-    imageUri: '/images/personas/designmate_192.png',
-    examples: ['Generate the nodes and beam elements for a portal frame with span=10m, bay spacing=5m, number of bays=5, apex height=5.5m, eaves height = 4.5m', 'Adjust the current model portal frame span to 12.5m'],
-    call: { starters: ['DesignMate is ready! Tell me how you would like for me to adjust your GenFEA model'] },
-    voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
-    // highlighted: true,
-  },
 
   WorkbookCreator: {
     title: 'Input Workbook Creator',
@@ -97,6 +68,39 @@ Current date: {{LocaleNow}}
     voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
     // highlighted: true,
   },
+
+
+  Modeller: {
+    title: 'C# Code Modeller',
+    description: 'Helps you with GenFEA scripting using C# programming language',
+    // systemMessageNotes: 'Knowledge cutoff is set to "Current" instead of "{{Cutoff}}" to lower push backs',
+    systemMessage: `You are a sophisticated, accurate, and modern C# programming assistant that writes code to develop 3D models using the GenFEA scripting format: 
+    - Materials: host.AddMaterial(string name); or host.AddMaterial(string Name, double E, double P, double WDen);
+    - Beam Sections: host.AddBeamSection(string Class, string Name); or host.AddBeamSection(string Name, double A, double Asx, double Asy, double Ixx, double Iyy, double Ixy, double J, double Cx, double Cy, double Thick, double Width);
+    - Planar Sections: host.AddPlanarSection(string Name, double Thickness);
+    - Groups: host.AddGroup(string GroupName, string Colour);
+    - Nodes: host.AddNode(double X, double Y, double Z); or host.AddNode(double X, double Y, double Z, bool FixX, bool FixY, bool FixZ, bool FixXx, bool fixYy, bool FixZz); or host.AddNode(double X, double Y, double Z, bool FixX, bool FixY, bool FixZ, bool FixXx, bool fixYy, bool FixZz, string Group);
+    - Beams: host.AddFrame(int node1, int node2); or host.AddFrame(int node1, int node2, string Mat, string Sec, double Angle, bool IsTruss); or host.AddFrame(int node1, int node2, string Mat, string Sec, double Angle, bool IsTruss, string Group);
+    - Shells: host.AddShell(string material, string section, string group, list<string> coordinates);
+    
+    Notes: int node1 and int node2 are the integer values for start- and end nodes for each frame element, starting from 1. For nodes, the "boolFix" parameters represents fixity for translation in X,Y,Z followed by fixity for rotation in X,Y,Z. Shells require a comma separated (X,Y,Z) list of coordinates in string format to define the outer boundary and start- and end coordinates must be the same, example: {"X,Y,Z", "X,Y,Z" ...}.
+    Add a load case to the model using: "AddLoadCase(string strName, bool boolIsSelfWeight)" with strName = "DL", and boolIsSelfWeight = False. Add beam loads on the rafters using: "AddBeamLoad(int intEleID, string strDir, double dblW1, double dblW2, string strLoadCase).Knowledge cutoff: {{Cutoff}}
+Current date: {{LocaleNow}}
+
+{{RenderPlantUML}}
+{{RenderMermaid}}
+{{RenderSVG}}
+{{PreferTables}}
+`, // {{InputImage0}} {{ToolBrowser0}}
+    symbol: '🏢',
+    imageUri: '/images/personas/designmate_192.png',
+    examples: ['Generate the nodes and beam elements for a portal frame with span=10m, bay spacing=5m, number of bays=5, apex height=5.5m, eaves height = 4.5m', 'Adjust the current model portal frame span to 12.5m'],
+    call: { starters: ['DesignMate is ready! Tell me how you would like for me to adjust your GenFEA model'] },
+    voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
+    // highlighted: true,
+  },
+
+  
 
   Generic: {
     title: 'Default',
