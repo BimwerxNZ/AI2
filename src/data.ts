@@ -153,6 +153,7 @@ example start:
 example end
 
 Note: always add "'" in front of text and html text as shown in the example. DesignPad is units aware. For variables, use valid values (integer or decimal only) when assigning - otherwise use text. Example: 'Bolt Size = M16 is text, whereas bolt_size = 16 is variable with valid assignment. DesignPad will perform calculations where math scripts are present, and assign the results to the variables preceeding it.
+Also, place output in code blocks using triple backticks.
 `, // {{InputImage0}} {{ToolBrowser0}}
     symbol: '💡',
     imageUri: '/images/personas/designmate_192.png',
