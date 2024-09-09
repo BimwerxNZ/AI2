@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export type SystemPurposeId = 'DesignMate' | 'Custom' | 'Modeller' | 'WorkbookCreator' | 'DesignPad' | 'Generic';
+export type SystemPurposeId = 'DesignMate' | 'Custom' | 'Modeller' | 'WorkbookCreator' | 'Generic' | 'YouTubeTranscriber';
 
 export const defaultSystemPurposeId: SystemPurposeId = 'DesignMate';
 
@@ -107,60 +107,6 @@ Current date: {{LocaleNow}}
     call: { starters: ['Hey, how can I assist?', 'AI assistant ready. What do you need?', 'Ready to assist.', 'Hello.'] },
     voices: { elevenLabs: { voiceId: 'yoZ06aMxZJJ28mfd3POQ' } },
   },
-
-  DesignPad: {
-    title: 'DesignPad Scripter',
-    description: 'Creates DesignPad Calculation scripts for you.',
-    systemMessage: 'You are an assistant helping the user to create DesignPad calculation scripts. Here is a working example:' +
-'<h1>Steel Beam Verification</h1>' + 
-'<b>Design Code:</b> Eurocode 3 (EN 1993-1-1) for structural steel design, applicable in Singapore.<br>' + 
-'<b>Section Type:</b> Hot-rolled (200 UC 46.2)<br>' + 
-'<b>Seismic Considerations:</b> Not typically critical for Singapore, but check for lateral stability.<br>' + 
-
-'<h3>Design Input:</h3>' +
-
-'Effective Length Factor' + 
-'K = 1.0' + 
-
-'Bending Capacity Verification' + 
-'I_xx = 45579080mm^4' + 
-'h = 200mm' + 
-'W_pl_y = I_xx/(h/2)' + 
-'M_Ed = 4283650Nm' + 
-'f_y = 355N/mm^2' + 
-'M_pl_Rd = f_y*W_pl_y' + 
-'M_Ed ≤ M_pl_Rd' + 
-
-'Shear Capacity Verification' + 
-'A_v = 3886.12mm^2' + 
-'V_Ed = 3136N' + 
-'gamma_M0 = 1.0' + 
-'V_pl_Rd = (f_y*A_v)/(sqrt(3)*gamma_M0)' + 
-'V_Ed ≤ V_pl_Rd' + 
-
-'Deflection Compliance' + 
-'d_max = 0.48mm' + 
-'L = 3000mm' + 
-'Allowable Deflection' + 
-'d_allowable = L/300' + 
-'d_max ≤ d_allowable' + 
-
-'Lateral-Torsional Buckling Capacity' + 
-'Assume critical moment M_cr higher than M_Ed for compact sections like UC.' + 
-'M_Ed ≤ M_cr' + 
-
-'<h3>Additional Considerations:</h3>' + 
-'<b>Reinforcement/Stiffening:</b> Not required for preliminary design; check detailed design if needed.<br>' + 
-'<b>Practical Sizes:</b> Use standard UC sections for ease of construction.<br>' + 
-
-'<h2>Conclusion</h2>' + 
-'The beam meets the structural and serviceability requirements per Eurocode 3 for the given loading and conditions.',
-    symbol: '🖥️',
-    examples: ['Create a DesignPad script to calculate the area of a cylinder', 'Create a DesignPad script to calculate the volume of a sphere'],
-    call: { starters: ['Enter your DesignPad script requirement here'] },
-    voices: { elevenLabs: { voiceId: 'z9fAnlkpzviPz146aGWa' } },
-  },
-
   Custom: {
     title: 'Custom',
     description: 'Define the persona, or task:',
@@ -169,6 +115,14 @@ Current date: {{LocaleNow}}
     call: { starters: ['What\'s the task?', 'What can I do?', 'Ready for your task.', 'Yes?'] },
     voices: { elevenLabs: { voiceId: 'flq6f7yk4E4fJM5XTYuZ' } },
   },
-  
+  YouTubeTranscriber: {
+    title: 'YouTube Transcriber',
+    description: 'Enter a YouTube URL to get the transcript and chat about the content.',
+    systemMessage: 'You are an expert in understanding video transcripts and answering questions about video content.',
+    symbol: '📺',
+    examples: ['Analyze the sentiment of this video', 'Summarize the key points of the lecture'],
+    call: { starters: ['Enter a YouTube URL to begin.', 'Ready to transcribe YouTube content.', 'Paste the YouTube link here.'] },
+    voices: { elevenLabs: { voiceId: 'z9fAnlkpzviPz146aGWa' } },
+  },
   
 };
