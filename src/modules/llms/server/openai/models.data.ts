@@ -1,6 +1,6 @@
 import type { OpenAIWire_API_Models_List } from '~/modules/aix/server/dispatch/wiretypes/openai.wiretypes';
 
-import { LLM_IF_OAI_Chat, LLM_IF_OAI_Complete, LLM_IF_OAI_Fn, LLM_IF_OAI_Json, LLM_IF_OAI_Vision } from '~/common/stores/llms/llms.types';
+import { LLM_IF_OAI_Chat, LLM_IF_OAI_Complete, LLM_IF_OAI_Fn, LLM_IF_OAI_Json, LLM_IF_OAI_Vision, LLM_IF_SPECIAL_OAI_O1Preview } from '~/common/stores/llms/llms.types';
 
 import type { ModelDescriptionSchema } from '../llm.server.types';
 
@@ -15,34 +15,7 @@ import { wireTogetherAIListOutputSchema } from './togetherai.wiretypes';
 // https://platform.openai.com/docs/models
 const _knownOpenAIChatModels: ManualMappings = [
 
-  // GPT-4o mini
-  {
-    idPrefix: 'gpt-4o-mini-2024-07-18',
-    label: 'GPT-4o Mini (2024-07-18)',
-    description: 'Affordable model for fast, lightweight tasks. GPT-4o mini is cheaper and more capable than GPT-3.5 Turbo.',
-    contextWindow: 128000,
-    maxCompletionTokens: 16384,
-    trainingDataCutoff: 'Oct 2023',
-    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
-    chatPrice: { input: 0.15, output: 0.60 },
-    benchmark: { cbaElo: 1277, cbaMmlu: 82.0 },
-  },
-  {
-    idPrefix: 'gpt-4o-mini',
-    label: 'GPT-4o mini',
-    description: 'Currently points to gpt-4o-mini-2024-07-18.',
-    symLink: 'gpt-4o-mini-2024-07-18',
-    hidden: true,
-    // copied from symlinked
-    contextWindow: 128000,
-    maxCompletionTokens: 16384,
-    trainingDataCutoff: 'Oct 2023',
-    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
-    chatPrice: { input: 0.15, output: 0.60 },
-    benchmark: { cbaElo: 1277, cbaMmlu: 82.0 },
-  },
-
-  // GPT-4o -> 2024-05-13 (will be update to 2024-08-06 in the future (3 weeks notice))
+  // GPT-4o -> 2024-05-13 (Starting October 2nd, 2024, gpt-4o will point to the gpt-4o-2024-08-06 snapshot)
   {
     idPrefix: 'gpt-4o',
     label: 'GPT-4o',
@@ -65,7 +38,7 @@ const _knownOpenAIChatModels: ManualMappings = [
     contextWindow: 128000,
     maxCompletionTokens: 16384,
     trainingDataCutoff: 'Oct 2023',
-    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json], // + Structured Outputs?
     chatPrice: { input: 2.5, output: 10 },
     benchmark: { cbaElo: 1286 + 1 },
   },
@@ -80,6 +53,97 @@ const _knownOpenAIChatModels: ManualMappings = [
     chatPrice: { input: 5, output: 15 },
     benchmark: { cbaElo: 1286 },
     hidden: true,
+  },
+  {
+    idPrefix: 'chatgpt-4o-latest',
+    label: 'ChatGPT-4o Latest',
+    description: 'Intended for research and evaluation. Dynamic model continuously updated to the current version of GPT-4o in ChatGPT.',
+    contextWindow: 128000,
+    maxCompletionTokens: 16384,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
+    chatPrice: { input: 5, output: 15 },
+  },
+
+  // GPT-4o mini
+  {
+    idPrefix: 'gpt-4o-mini',
+    label: 'GPT-4o mini',
+    description: 'Currently points to gpt-4o-mini-2024-07-18.',
+    symLink: 'gpt-4o-mini-2024-07-18',
+    hidden: true,
+    // copied from symlinked
+    contextWindow: 128000,
+    maxCompletionTokens: 16384,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
+    chatPrice: { input: 0.15, output: 0.60 },
+    benchmark: { cbaElo: 1277, cbaMmlu: 82.0 },
+  },
+  {
+    idPrefix: 'gpt-4o-mini-2024-07-18',
+    label: 'GPT-4o Mini (2024-07-18)',
+    description: 'Affordable model for fast, lightweight tasks. GPT-4o mini is cheaper and more capable than GPT-3.5 Turbo.',
+    contextWindow: 128000,
+    maxCompletionTokens: 16384,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn, LLM_IF_OAI_Json],
+    chatPrice: { input: 0.15, output: 0.60 },
+    benchmark: { cbaElo: 1277, cbaMmlu: 82.0 },
+  },
+
+  // o1-preview
+  {
+    idPrefix: 'o1-preview',
+    label: 'o1 Preview',
+    description: 'Points to the most recent snapshot of the o1 model: o1-preview-2024-09-12',
+    symLink: 'o1-preview-2024-09-12',
+    hidden: true,
+    // copied from symlinked
+    contextWindow: 128000,
+    maxCompletionTokens: 32768,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_SPECIAL_OAI_O1Preview],
+    chatPrice: { input: 15, output: 60 },
+    isPreview: true,
+  },
+  {
+    idPrefix: 'o1-preview-2024-09-12',
+    label: 'o1 Preview (2024-09-12) ⏱️',
+    description: 'This model takes longer to run and does not support streaming.\n\nNew reasoning model for complex tasks that require broad general knowledge.',
+    contextWindow: 128000,
+    maxCompletionTokens: 32768,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_SPECIAL_OAI_O1Preview],
+    chatPrice: { input: 15, output: 60 },
+    isPreview: true,
+  },
+
+  // o1-mini
+  {
+    idPrefix: 'o1-mini',
+    label: 'o1 Mini',
+    description: 'Points to the most recent o1-mini snapshot: o1-mini-2024-09-12',
+    symLink: 'o1-mini-2024-09-12',
+    hidden: true,
+    // copied from symlinked
+    contextWindow: 128000,
+    maxCompletionTokens: 65536,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_SPECIAL_OAI_O1Preview],
+    chatPrice: { input: 3, output: 12 },
+    isPreview: true,
+  },
+  {
+    idPrefix: 'o1-mini-2024-09-12',
+    label: 'o1 Mini (2024-09-12) ⏱️',
+    description: 'This model feels slow because it does not support streaming.\n\nFast, cost-efficient reasoning model tailored to coding, math, and science use cases.',
+    contextWindow: 128000,
+    maxCompletionTokens: 65536,
+    trainingDataCutoff: 'Oct 2023',
+    interfaces: [LLM_IF_OAI_Chat, LLM_IF_SPECIAL_OAI_O1Preview],
+    chatPrice: { input: 3, output: 12 },
+    isPreview: true,
   },
 
   // GPT4 Turbo with Vision -> 2024-04-09
@@ -111,7 +175,7 @@ const _knownOpenAIChatModels: ManualMappings = [
 
   // GPT4 Turbo Previews
   {
-    idPrefix: 'gpt-4-turbo-preview', // GPT-4 Turbo preview model -> 0125
+    idPrefix: 'gpt-4-turbo-preview',
     label: 'GPT-4 Preview Turbo',
     description: 'GPT-4 Turbo preview model. Currently points to gpt-4-0125-preview.',
     symLink: 'gpt-4-0125-preview',
@@ -126,7 +190,7 @@ const _knownOpenAIChatModels: ManualMappings = [
     benchmark: { cbaElo: 1245 },
   },
   {
-    idPrefix: 'gpt-4-0125-preview', // GPT-4 Turbo preview model
+    idPrefix: 'gpt-4-0125-preview',
     label: 'GPT-4 Turbo (0125)',
     description: 'GPT-4 Turbo preview model intended to reduce cases of "laziness" where the model doesn\'t complete a task.',
     contextWindow: 128000,
@@ -148,34 +212,6 @@ const _knownOpenAIChatModels: ManualMappings = [
     chatPrice: { input: 10, output: 30 },
     benchmark: { cbaElo: 1251 },
     hidden: true,
-  },
-
-  // GPT4 Vision Previews
-  {
-    idPrefix: 'gpt-4-vision-preview', // GPT-4 Turbo vision preview
-    label: 'GPT-4 Preview Vision',
-    description: 'GPT-4 model with the ability to understand images, in addition to all other GPT-4 Turbo capabilities. This is a preview model, we recommend developers to now use gpt-4-turbo which includes vision capabilities. Currently points to gpt-4-1106-vision-preview.',
-    symLink: 'gpt-4-1106-vision-preview',
-    // copied from symlinked
-    isPreview: true,
-    contextWindow: 128000,
-    maxCompletionTokens: 4096,
-    trainingDataCutoff: 'Apr 2023',
-    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn],
-    chatPrice: { input: 10, output: 30 },
-    hidden: true, // Deprecated in favor of gpt-4-turbo
-  },
-  {
-    idPrefix: 'gpt-4-1106-vision-preview',
-    label: 'GPT-4 Preview Vision (1106)',
-    description: 'GPT-4 model with the ability to understand images, in addition to all other GPT-4 Turbo capabilities. This is a preview model, we recommend developers to now use gpt-4-turbo which includes vision capabilities. Returns a maximum of 4,096 output tokens.',
-    isPreview: true,
-    contextWindow: 128000,
-    maxCompletionTokens: 4096,
-    trainingDataCutoff: 'Apr 2023',
-    interfaces: [LLM_IF_OAI_Chat, LLM_IF_OAI_Vision, LLM_IF_OAI_Fn],
-    chatPrice: { input: 10, output: 30 },
-    hidden: true, // Deprecated in favor of gpt-4-turbo
   },
 
 
@@ -251,20 +287,8 @@ const _knownOpenAIChatModels: ManualMappings = [
     isLegacy: true,
   },
 
-
-  // 3.5-Turbo-Instruct (Not for Chat)
-  {
-    idPrefix: 'gpt-3.5-turbo-instruct',
-    label: '3.5-Turbo Instruct',
-    description: 'Similar capabilities as GPT-3 era models. Compatible with legacy Completions endpoint and not Chat Completions.',
-    contextWindow: 4097,
-    trainingDataCutoff: 'Sep 2021',
-    interfaces: [/* NO: LLM_IF_OAI_Chat,*/ LLM_IF_OAI_Complete],
-    chatPrice: { input: 1.5, output: 2 },
-    hidden: true,
-  },
-
-  // 3.5-Turbo's (16ks)
+  // 3.5-Turbo
+  // As of July 2024, gpt-4o-mini should be used in place of gpt-3.5-turbo, as it is cheaper, more capable, multimodal, and just as fast.
   {
     idPrefix: 'gpt-3.5-turbo-0125',
     label: '3.5-Turbo (0125)',
@@ -303,6 +327,18 @@ const _knownOpenAIChatModels: ManualMappings = [
     benchmark: { cbaElo: 1105 },
   },
 
+
+  // 3.5-Turbo-Instruct (Not for Chat)
+  {
+    idPrefix: 'gpt-3.5-turbo-instruct',
+    label: '3.5-Turbo Instruct',
+    description: 'Similar capabilities as GPT-3 era models. Compatible with legacy Completions endpoint and not Chat Completions.',
+    contextWindow: 4097,
+    trainingDataCutoff: 'Sep 2021',
+    interfaces: [/* NO: LLM_IF_OAI_Chat,*/ LLM_IF_OAI_Complete],
+    chatPrice: { input: 1.5, output: 2 },
+    hidden: true,
+  },
 
   // Azure variants - because someone forgot the dot
   {
@@ -417,6 +453,7 @@ export function lmStudioModelToModelDescription(modelId: string): ModelDescripti
     description: `Unknown LM Studio model. File: ${modelId}`,
     contextWindow: null, // 'not provided'
     interfaces: [LLM_IF_OAI_Chat], // assume..
+    chatPrice: { input: 'free', output: 'free' },
   });
 }
 
@@ -449,6 +486,7 @@ export function localAIModelToModelDescription(modelId: string): ModelDescriptio
     description: 'Unknown localAI model. Please update `models.data.ts` with this ID',
     contextWindow: null, // 'not provided'
     interfaces: [LLM_IF_OAI_Chat], // assume..
+    chatPrice: { input: 'free', output: 'free' },
   });
 }
 

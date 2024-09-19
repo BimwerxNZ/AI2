@@ -22,6 +22,7 @@ import ReplyAllRoundedIcon from '@mui/icons-material/ReplyAllRounded';
 import ReplyRoundedIcon from '@mui/icons-material/ReplyRounded';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
+import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import TextureIcon from '@mui/icons-material/Texture';
 import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom';
@@ -37,7 +38,7 @@ import { DMessage, DMessageId, DMessageUserFlag, DMetaReferenceItem, MESSAGE_FLA
 import { KeyStroke } from '~/common/components/KeyStroke';
 import { MarkHighlightIcon } from '~/common/components/icons/MarkHighlightIcon';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
-import { adjustContentScaling, themeScalingMap, themeZIndexPageBar } from '~/common/app.theme';
+import { adjustContentScaling, themeScalingMap, themeZIndexChatBubble } from '~/common/app.theme';
 import { copyToClipboard } from '~/common/util/clipboardUtils';
 import { createTextContentFragment, DMessageFragment, DMessageFragmentId } from '~/common/stores/chat/chat.fragments';
 import { useUIPreferencesStore } from '~/common/state/store-ui';
@@ -88,6 +89,7 @@ const personaAvatarOrMenuSx: SxProps = {
 
 const editButtonWrapSx: SxProps = {
   overflowWrap: 'anywhere',
+  mb: -0.5, // this is so that the 'eidt/cancel' labels won't push down the edit box when single lined
 };
 
 const fragmentsListSx: SxProps = {
@@ -137,7 +139,7 @@ export function ChatMessage(props: {
   hideAvatar?: boolean,
   showAntPromptCaching?: boolean,
   showBlocksDate?: boolean,
-  showUnsafeHtml?: boolean,
+  showUnsafeHtmlCode?: boolean,
   adjustContentScaling?: number,
   topDecorator?: React.ReactNode,
   onAddInReferenceTo?: (item: DMetaReferenceItem) => void,
@@ -487,7 +489,8 @@ export function ChatMessage(props: {
   }, [handleContextMenu]);
 
   const handleBlocksDoubleClick = React.useCallback((event: React.MouseEvent) => {
-    doubleClickToEdit && props.onMessageFragmentReplace && handleOpsEditToggle(event);
+    if (doubleClickToEdit || event.shiftKey)
+      props.onMessageFragmentReplace && handleOpsEditToggle(event);
   }, [doubleClickToEdit, handleOpsEditToggle, props.onMessageFragmentReplace]);
 
   const handleBlocksMouseUp = React.useCallback((event: React.MouseEvent) => {
@@ -577,7 +580,7 @@ export function ChatMessage(props: {
       {/* Message Row: Aside, Fragment[][], Aside2 */}
       <Box
         role={undefined /* aside | message | ops */}
-        sx={fromAssistant ? messageBodySx : messageBodyReverseSx}
+        sx={(fromAssistant && !isEditingText) ? messageBodySx : messageBodyReverseSx}
       >
 
         {/* [start-Avatar] Avatar (Persona) */}
@@ -588,7 +591,7 @@ export function ChatMessage(props: {
             <Box
               onClick={(event) => {
                 // [DEBUG][PROD] shift+click to dump the DMessage
-                event.shiftKey && console.log(props.message);
+                event.shiftKey && console.log('message', props.message);
                 handleOpsMenuToggle(event);
               }}
               onContextMenu={handleOpsMenuToggle}
@@ -612,7 +615,7 @@ export function ChatMessage(props: {
 
             {/* Assistant (llm/function) name */}
             {fromAssistant && !zenMode && (
-              <TooltipOutlined asLargePane title={messageAvatarTooltip} placement='bottom'>
+              <TooltipOutlined asLargePane title={messageAvatarTooltip} placement='bottom-start'>
                 <Typography level='body-xs' sx={messagePendingIncomplete ? messageAvatarLabelAnimatedSx : messageAvatarLabelSx}>
                   {messageAvatarLabel}
                 </Typography>
@@ -680,7 +683,7 @@ export function ChatMessage(props: {
             messageRole={messageRole}
             optiAllowSubBlocksMemo={!!messagePendingIncomplete}
             disableMarkdownText={disableMarkdown || fromUser /* User messages are edited as text. Try to have them in plain text. NOTE: This may bite. */}
-            showUnsafeHtml={props.showUnsafeHtml}
+            showUnsafeHtmlCode={props.showUnsafeHtmlCode}
             enhanceCodeBlocks={labsEnhanceCodeBlocks}
 
             textEditsState={textContentEditState}
@@ -693,7 +696,7 @@ export function ChatMessage(props: {
             onFragmentReplace={handleFragmentReplace}
 
             onContextMenu={(props.onMessageFragmentReplace && ENABLE_CONTEXT_MENU) ? handleBlocksContextMenu : undefined}
-            onDoubleClick={(props.onMessageFragmentReplace && doubleClickToEdit) ? handleBlocksDoubleClick : undefined}
+            onDoubleClick={(props.onMessageFragmentReplace /*&& doubleClickToEdit disabled, as we may have shift too */) ? handleBlocksDoubleClick : undefined}
           />
 
           {/* Document Fragments */}
@@ -759,7 +762,7 @@ export function ChatMessage(props: {
       {!!opsMenuAnchor && (
         <CloseableMenu
           dense placement='bottom-end'
-          open anchorEl={opsMenuAnchor} onClose={handleCloseOpsMenu}
+          open={true} anchorEl={opsMenuAnchor} onClose={handleCloseOpsMenu}
           sx={{ minWidth: 280 }}
         >
 
@@ -882,7 +885,7 @@ export function ChatMessage(props: {
                 ? <>Restart <span style={{ opacity: 0.5 }}>from here</span></>
                 : !props.isBottom
                   ? <>Retry <span style={{ opacity: 0.5 }}>from here</span></>
-                  : <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1 }}>Retry<KeyStroke combo='Ctrl + Shift + Z' /></Box>}
+                  : <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1 }}>Retry<KeyStroke variant='outlined' combo='Ctrl + Shift + Z' /></Box>}
             </MenuItem>
           )}
           {!!props.onMessageBeam && (
@@ -894,7 +897,7 @@ export function ChatMessage(props: {
                 ? <>Beam <span style={{ opacity: 0.5 }}>from here</span></>
                 : !props.isBottom
                   ? <>Beam <span style={{ opacity: 0.5 }}>this message</span></>
-                  : <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1 }}>Beam<KeyStroke combo='Ctrl + Shift + B' /></Box>}
+                  : <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1 }}>Beam<KeyStroke variant='outlined' combo='Ctrl + Shift + B' /></Box>}
             </MenuItem>
           )}
         </CloseableMenu>
@@ -903,8 +906,8 @@ export function ChatMessage(props: {
 
       {/* Bubble Over Toolbar */}
       {ENABLE_BUBBLE && !!bubbleAnchor && (
-        <Popper placement='top-start' open anchorEl={bubbleAnchor} slotProps={{
-          root: { style: { zIndex: themeZIndexPageBar + 1 } },
+        <Popper placement='top-start' open={true} anchorEl={bubbleAnchor} slotProps={{
+          root: { style: { zIndex: themeZIndexChatBubble } },
         }}>
           <ClickAwayListener onClickAway={() => closeBubble()}>
             <ButtonGroup
@@ -916,12 +919,12 @@ export function ChatMessage(props: {
                 backgroundColor: 'background.popup',
                 border: '1px solid',
                 borderColor: 'primary.outlinedBorder',
-                boxShadow: '0px 4px 12px -4px rgb(var(--joy-palette-neutral-darkChannel) / 50%)',
-                mb: 1,
-                ml: -1,
+                boxShadow: '0px 4px 24px -4px rgb(var(--joy-palette-neutral-darkChannel) / 50%)',
+                mb: 1.5,
+                ml: -1.5,
                 alignItems: 'center',
                 '& > button': {
-                  '--Icon-fontSize': '1rem',
+                  '--Icon-fontSize': 'var(--joy-fontSize-lg, 1.125rem)',
                   minHeight: '2.5rem',
                   minWidth: '2.75rem',
                 },
@@ -938,36 +941,9 @@ export function ChatMessage(props: {
               {/*    <ChatBeamIcon sx={{ fontSize: 'xl' }} />*/}
               {/*  </IconButton>*/}
               {/*</Tooltip>}*/}
-
               {!!onAddInReferenceTo && <Divider />}
 
-              {!!props.onTextDiagram && <Tooltip disableInteractive arrow placement='top' title={couldDiagram ? 'Auto-Diagram...' : 'Too short to Auto-Diagram'}>
-                <IconButton onClick={couldDiagram ? handleOpsDiagram : undefined}>
-                  <AccountTreeOutlinedIcon sx={{ color: couldDiagram ? 'primary' : 'neutral.plainDisabledColor' }} />
-                </IconButton>
-              </Tooltip>}
-              {!!props.onTextImagine && <Tooltip disableInteractive arrow placement='top' title='Auto-Draw'>
-                <IconButton onClick={handleOpsImagine} disabled={!couldImagine || props.isImagining}>
-                  {!props.isImagining ? <FormatPaintOutlinedIcon /> : <CircularProgress sx={{ '--CircularProgress-size': '16px' }} />}
-                </IconButton>
-              </Tooltip>}
-              {!!props.onTextSpeak && <Tooltip disableInteractive arrow placement='top' title='Speak'>
-                <IconButton onClick={handleOpsSpeak} disabled={!couldSpeak || props.isSpeaking}>
-                  {!props.isSpeaking ? <RecordVoiceOverOutlinedIcon /> : <CircularProgress sx={{ '--CircularProgress-size': '16px' }} />}
-                </IconButton>
-              </Tooltip>}
-
-              {(!!props.onTextDiagram || !!props.onTextImagine || !!props.onTextSpeak) && <Divider />}
-
-              {/* Highlight (edits fragment, only for assistant messages) */}
-              {fromAssistant && <Tooltip disableInteractive arrow placement='top' title='Toggle Bold'>
-                <IconButton disabled={!handleHighlightSelText} onClick={!handleHighlightSelText ? undefined : () => {
-                  handleHighlightSelText('strong');
-                  closeBubble();
-                }}>
-                  <FormatBoldIcon />
-                </IconButton>
-              </Tooltip>}
+              {/* Text Tools (edits fragment, only for assistant messages) */}
               {fromAssistant && <Tooltip disableInteractive arrow placement='top' title='Highlight Text'>
                 <IconButton disabled={!handleHighlightSelText} onClick={!handleHighlightSelText ? undefined : () => {
                   handleHighlightSelText('highlight');
@@ -976,7 +952,41 @@ export function ChatMessage(props: {
                   <MarkHighlightIcon hcolor={handleHighlightSelText ? 'yellow' : undefined} />
                 </IconButton>
               </Tooltip>}
+              {fromAssistant && <Tooltip disableInteractive arrow placement='top' title='Strike Through'>
+                <IconButton disabled={!handleHighlightSelText} onClick={!handleHighlightSelText ? undefined : () => {
+                  handleHighlightSelText('strike');
+                  closeBubble();
+                }}>
+                  <StrikethroughSIcon />
+                </IconButton>
+              </Tooltip>}
+              {fromAssistant && <Tooltip disableInteractive arrow placement='top' title='Toggle Bold'>
+                <IconButton disabled={!handleHighlightSelText} onClick={!handleHighlightSelText ? undefined : () => {
+                  handleHighlightSelText('strong');
+                  closeBubble();
+                }}>
+                  <FormatBoldIcon />
+                </IconButton>
+              </Tooltip>}
               {fromAssistant && <Divider />}
+
+              {/* Intelligent functions */}
+              {!!props.onTextDiagram && <Tooltip disableInteractive arrow placement='top' title={couldDiagram ? 'Auto-Diagram...' : 'Too short to Auto-Diagram'}>
+                <IconButton color='success' onClick={couldDiagram ? handleOpsDiagram : undefined}>
+                  <AccountTreeOutlinedIcon sx={{ color: couldDiagram ? 'primary' : 'neutral.plainDisabledColor' }} />
+                </IconButton>
+              </Tooltip>}
+              {!!props.onTextImagine && <Tooltip disableInteractive arrow placement='top' title='Auto-Draw'>
+                <IconButton color='success' onClick={handleOpsImagine} disabled={!couldImagine || props.isImagining}>
+                  {!props.isImagining ? <FormatPaintOutlinedIcon /> : <CircularProgress sx={{ '--CircularProgress-size': '16px' }} />}
+                </IconButton>
+              </Tooltip>}
+              {!!props.onTextSpeak && <Tooltip disableInteractive arrow placement='top' title='Speak'>
+                <IconButton color='success' onClick={handleOpsSpeak} disabled={!couldSpeak || props.isSpeaking}>
+                  {!props.isSpeaking ? <RecordVoiceOverOutlinedIcon /> : <CircularProgress sx={{ '--CircularProgress-size': '16px' }} />}
+                </IconButton>
+              </Tooltip>}
+              {(!!props.onTextDiagram || !!props.onTextImagine || !!props.onTextSpeak) && <Divider />}
 
               {/* Bubble Copy */}
               <Tooltip disableInteractive arrow placement='top' title='Copy Selection'>
@@ -995,7 +1005,7 @@ export function ChatMessage(props: {
       {!!contextMenuAnchor && (
         <CloseableMenu
           dense placement='bottom-start'
-          open anchorEl={contextMenuAnchor} onClose={closeContextMenu}
+          open={true} anchorEl={contextMenuAnchor} onClose={closeContextMenu}
           sx={{ minWidth: 220 }}
         >
           <MenuItem onClick={handleOpsCopy} sx={{ flex: 1, alignItems: 'center' }}>

@@ -1,7 +1,7 @@
 import { suggestUIMixin } from '~/modules/aifn/autosuggestions/autoSuggestions';
 
 import type { DLLMId } from '~/common/stores/llms/llms.types';
-import { browserLangOrUS } from '~/common/util/pwaUtils';
+import { BrowserLang, Is } from '~/common/util/pwaUtils';
 import { findLLMOrThrow } from '~/common/stores/llms/store-llms';
 
 import { getChatAutoAI } from '../../../apps/chat/store-app-chat';
@@ -63,7 +63,7 @@ export function bareBonesPromptMixer(_template: string, assistantLlmId: DLLMId |
   if (mixed.includes('{{LocaleNow}}')) {
     // const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     // Format the current date and time according to the user's locale and timezone
-    const formatter = new Intl.DateTimeFormat(browserLangOrUS, {
+    const formatter = new Intl.DateTimeFormat(BrowserLang.orUS, {
       weekday: 'short', // Full name of the day of the week
       year: 'numeric', // Numeric year
       month: 'short', // Full name of the month
@@ -84,6 +84,7 @@ export function bareBonesPromptMixer(_template: string, assistantLlmId: DLLMId |
   // {{Render...}}
   mixed = mixed.replace('{{RenderMermaid}}', 'Mermaid rendering: Enabled');
   mixed = mixed.replace('{{RenderPlantUML}}', 'PlantUML rendering: Enabled');
+  mixed = mixed.replace('{{RenderHTML}}', `HTML in markdown rendering: Sleek HTML for ${Is.Desktop ? 'desktop' : 'mobile'} screens (self-contained with CSS/JS, leverage top libraries, external links OK)`);
   mixed = mixed.replace('{{RenderSVG}}', 'SVG in markdown rendering: Enabled');
   // {{Input...}} / {{Tool...}} - TBA
   mixed = mixed.replace('{{InputImage0}}', 'Image input capabilities: Disabled');
