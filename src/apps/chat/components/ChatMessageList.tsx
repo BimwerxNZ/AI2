@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import type { SxProps } from '@mui/joy/styles/types';
 import { Box, List } from '@mui/joy';
 
-import type { SystemPurposes } from '../../../data';
+import type { SystemPurposeExample } from '../../../data';
 
 import type { DiagramConfig } from '~/modules/aifn/digrams/DiagramsModal';
 

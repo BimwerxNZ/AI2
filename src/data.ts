@@ -11,11 +11,13 @@ export type SystemPurposeData = {
   systemMessageNotes?: string;
   symbol: string;
   imageUri?: string;
-  examples?: string[];
+  examples?: SystemPurposeExample[];
   highlighted?: boolean;
   call?: { starters?: string[] };
   voices?: { elevenLabs?: { voiceId: string } };
 };
+
+export type SystemPurposeExample = string | { prompt: string, action?: 'require-data-attachment' };
 
 export const SystemPurposes: { [key in SystemPurposeId]: SystemPurposeData } = {
   DesignMate: {
@@ -192,5 +194,5 @@ Also, place output in code blocks using triple backticks.
     call: { starters: ['Enter a YouTube URL to begin.', 'Ready to transcribe YouTube content.', 'Paste the YouTube link here.'] },
     voices: { elevenLabs: { voiceId: 'z9fAnlkpzviPz146aGWa' } },
   },
-  
+
 };
